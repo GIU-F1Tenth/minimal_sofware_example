@@ -4,3 +4,7 @@
 [submodule "src/watchdog/watchdog"]
 	path = src/watchdog/watchdog
 	url = git@github.com:GIU-F1Tenth/watchdog.git
+[submodule "src/localization/nav2"]
+	path = src/localization/nav2
+	url = https://github.com/ros-navigation/navigation2.git
+	branch = humble
