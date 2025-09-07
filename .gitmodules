@@ -1,0 +1,3 @@
+[submodule "src/control/pure_pursuit"]
+	path = src/control/pure_pursuit
+	url = git@github.com:GIU-F1Tenth/pure_pursuit.git
