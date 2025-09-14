@@ -4,7 +4,7 @@ package_name = 'simple_planner'
 
 setup(
     name=package_name,
-    version='1.0.0',
+    version='1.1.0',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'simple_path_publisher = simple_planner.simple_path_publisher:main',
         ],
     },
 )
