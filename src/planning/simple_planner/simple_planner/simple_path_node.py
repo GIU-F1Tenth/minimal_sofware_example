@@ -29,6 +29,7 @@ class SimplePathNode(Node):
         self.declare_parameter('invert', False)
         self.declare_parameter('frame_id', 'map')
         self.declare_parameter('publish_rate', 1.0)
+        self.declare_parameter('path_topic', '/pp_path')
 
         # Get parameters
         self.csv_path = self.get_parameter(
@@ -39,6 +40,8 @@ class SimplePathNode(Node):
             'frame_id').get_parameter_value().string_value
         self.publish_rate = self.get_parameter(
             'publish_rate').get_parameter_value().double_value
+        self.path_topic = self.get_parameter(
+            'path_topic').get_parameter_value().string_value
 
         # Validate parameters
         if not self.csv_path:
@@ -65,7 +68,7 @@ class SimplePathNode(Node):
                 return
 
         # Create publisher
-        self.path_publisher = self.create_publisher(Path, '~/planned_path', 10)
+        self.path_publisher = self.create_publisher(Path, self.path_topic, 10)
 
         # Load waypoints from CSV
         self.waypoints = self.load_waypoints_from_csv()
