@@ -6,6 +6,26 @@
 # ==============================================================================
 # Pure Pursuit Controller Configuration
 # Controls trajectory following and velocity commands
+
+# ==============================================================================
+# Odom to Base Link Transform Node Configuration
+# Publishes TF transforms from map to odom and odom to base_link
+# ==============================================================================
+odom_to_base_link_node:
+  ros__parameters:
+    # Topic Configuration
+    topics:
+      odom_topic: "/ego_racecar/odom"    # Odometry topic to subscribe to
+    
+    # Frame Configuration
+    frames:
+      map_frame: "map"                   # Map frame ID
+      odom_frame: "odom"                 # Odometry frame ID
+      base_link_frame: "ego_racecar/base_link"  # Base link frame ID
+
+# ==============================================================================
+# Pure Pursuit Controller Configuration
+# Controls trajectory following and velocity commands
 # ==============================================================================
 pure_pursuit_node:
   ros__parameters:
@@ -26,12 +46,12 @@ pure_pursuit_node:
     
     # Topic Names
     cmd_vel_topic: "/drive"           # Ackermann drive command topic
-    odometry_topic: "/odom"           # Odometry topic for vehicle pose
+    odometry_topic: "/ego_racecar/odom"           # Odometry topic for vehicle pose
     joy_topic: "/joy"                 # Joystick topic for manual tuning
     pause_topic: "/pause"             # Emergency pause topic
     path_topic: "/pp_path"            # Topic for the selected path
     tf_target: "map"
-    tf_source: "base_link"
+    tf_source: "ego_racecar/laser"
 
     # Timer and Processing Parameters
     control_frequency: 200.0          # Control loop frequency in Hz (1/timer_period)
@@ -81,7 +101,7 @@ amcl:
     alpha5: 0.2                      # Translation noise (strafe)
     
     # Frame Configuration
-    base_frame_id: "base_link"       # Robot base frame
+    base_frame_id: "ego_racecar/base_link"       # Robot base frame
     global_frame_id: "map"           # Global coordinate frame
     odom_frame_id: "odom"            # Odometry frame
     
@@ -132,7 +152,7 @@ amcl:
 # ==============================================================================
 simple_planner:
   ros__parameters:
-    csv_path: ""                     # Path to CSV file containing waypoints (x,y,v format)
+    csv_path: "/home/fam/Desktop/F1Tenth/Repos/minimal_sofware_example/src/control/pure_pursuit/path/example_path.csv"                     # Path to CSV file containing waypoints (x,y,v format)
     invert: false                    # Invert the order of waypoints
     frame_id: "map"                  # Frame ID for the waypoints
     publish_rate: 1.0                # Publish rate for path messages

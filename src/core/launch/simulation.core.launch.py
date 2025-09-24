@@ -113,6 +113,36 @@ def generate_launch_description():
         condition=IfCondition(use_watchdog)
     )
 
+    odom_to_base_link_node = Node(
+        package='core',
+        executable='odom_to_base_link_node',
+        name='odom_to_base_link_node',
+        output='screen',
+        parameters=[
+            config_file_path,
+            {'use_sim_time': use_sim_time}
+        ],
+        arguments=['--ros-args', '--log-level', log_level],
+        respawn=True,
+        respawn_delay=2.0
+    )
+
+    lifecycle_manager_node = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager_localization',
+        output='screen',
+        parameters=[
+            {'autostart': True},
+            {'node_names': ['amcl']},
+            {'use_sim_time': use_sim_time}
+        ],
+        arguments=['--ros-args', '--log-level', log_level],
+        respawn=True,
+        respawn_delay=2.0,
+        condition=IfCondition(use_amcl)
+    )
+
     return LaunchDescription([
         declare_config_file_arg,
         declare_use_sim_time_arg,
@@ -125,5 +155,7 @@ def generate_launch_description():
         amcl_node,
         pure_pursuit_node,
         watchdog_node,
+        odom_to_base_link_node,
+        lifecycle_manager_node,
         LogInfo(msg="Basic AROLA Simulation System launch completed!"),
     ])
