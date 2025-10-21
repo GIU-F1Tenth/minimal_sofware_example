@@ -177,22 +177,45 @@ git
 ### Prerequisites
 - ROS 2 Humble or later
 - Ubuntu 22.04 (recommended)
+- Python 3.8 or higher
 - Colcon build tools
 
-### 1. Build the AROLA System
+### 1. Install dependencies
+
+If you do not have them already installed, install the dependencies with:
+```bash
+sudo apt install \
+  ros-humble-gazebo-ros-pkgs \
+  libnanoflann-dev \
+  ros-humble-ompl \
+  libceres-dev \
+  libxtensor-dev \
+  ros-humble-behaviortree-cpp-v3 \
+  ros-humble-test-msgs \
+  ros-humble-laser-proc \
+  ros-humble-diagnostic-updater \
+  ros-humble-bondcpp \
+  ros-humble-navigation2 \
+  ros-humble-nav2-bringup \
+  ros-humble-ackermann-msgs
+
+pip install pandas==2.3.3
+```
+
+### 2. Build the AROLA System
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/GIU-F1Tenth/minimal_sofware_example.git
 cd minimal_software_example
 
 # Build all AROLA layers
-colcon build --packages-select core pure_pursuit simple_planner watchdog # This assumes you already have nav2 installed and built
+colcon build
 
 # Source the workspace
 source install/setup.bash
 ```
 
-### 2. Configure AROLA Parameters
+### 3. Configure AROLA Parameters
 The AROLA architecture uses centralized configuration in `src/core/config/params.yaml`:
 
 ```yaml
@@ -220,7 +243,7 @@ watchdog:
   timeout_threshold: 2.0
 ```
 
-### 3. Launch the AROLA System
+### 4. Launch the AROLA System
 ```bash
 # Launch the complete AROLA stack
 ros2 launch core core.launch.py
