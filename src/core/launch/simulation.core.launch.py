@@ -9,10 +9,12 @@ License: MIT
 
 import os
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, LogInfo
+from launch.actions import DeclareLaunchArgument, LogInfo, IncludeLaunchDescription
 from launch.conditions import IfCondition
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
 from ament_index_python.packages import get_package_share_directory
 
 
@@ -48,12 +50,42 @@ def generate_launch_description():
         default_value='false',  # Often disabled in simulation for simplicity
         description='Enable system watchdog monitoring'
     )
+    declare_use_race_monitor_arg = DeclareLaunchArgument(
+        'use_race_monitor',
+        default_value='true',
+        description='Enable race monitoring and performance tracking'
+    )
+    declare_race_mode_arg = DeclareLaunchArgument(
+        'race_mode',
+        default_value='lap_complete',
+        description='Race ending mode: lap_complete, crash, or manual'
+    )
+    declare_required_laps_arg = DeclareLaunchArgument(
+        'required_laps',
+        default_value='20',
+        description='Number of laps required to complete the race (lap_complete mode only)'
+    )
+    declare_controller_name_arg = DeclareLaunchArgument(
+        'controller_name',
+        default_value='custom_controller',
+        description='Name of the controller being tested'
+    )
+    declare_experiment_id_arg = DeclareLaunchArgument(
+        'experiment_id',
+        default_value='exp_001',
+        description='Experiment identifier'
+    )
 
     config_file_path = LaunchConfiguration('config_file')
     use_sim_time = LaunchConfiguration('use_sim_time')
     log_level = LaunchConfiguration('log_level')
     use_amcl = LaunchConfiguration('use_amcl')
     use_watchdog = LaunchConfiguration('use_watchdog')
+    use_race_monitor = LaunchConfiguration('use_race_monitor')
+    race_mode = LaunchConfiguration('race_mode')
+    required_laps = LaunchConfiguration('required_laps')
+    controller_name = LaunchConfiguration('controller_name')
+    experiment_id = LaunchConfiguration('experiment_id')
 
     pure_pursuit_node = Node(
         package='pure_pursuit',
@@ -143,12 +175,34 @@ def generate_launch_description():
         condition=IfCondition(use_amcl)
     )
 
+    race_monitor_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('race_monitor'),
+                'launch',
+                'race_monitor.launch.py'
+            ])
+        ]),
+        launch_arguments={
+            'race_mode': race_mode,
+            'required_laps': required_laps,
+            'controller_name': controller_name,
+            'experiment_id': experiment_id,
+        }.items(),
+        condition=IfCondition(use_race_monitor)
+    )
+
     return LaunchDescription([
         declare_config_file_arg,
         declare_use_sim_time_arg,
         declare_log_level_arg,
         declare_use_amcl_arg,
         declare_use_watchdog_arg,
+        declare_use_race_monitor_arg,
+        declare_race_mode_arg,
+        declare_required_laps_arg,
+        declare_controller_name_arg,
+        declare_experiment_id_arg,
         LogInfo(msg="Simulation mode: ENABLED"),
         LogInfo(msg="Configuration file: " + config_file),
         simple_planner_node,
@@ -157,5 +211,6 @@ def generate_launch_description():
         watchdog_node,
         odom_to_base_link_node,
         lifecycle_manager_node,
+        race_monitor_launch,
         LogInfo(msg="Basic AROLA Simulation System launch completed!"),
     ])
