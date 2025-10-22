@@ -152,7 +152,7 @@ amcl:
 # ==============================================================================
 simple_planner:
   ros__parameters:
-    csv_path: "/home/fam/Desktop/F1Tenth/Repos/minimal_sofware_example/src/control/pure_pursuit/path/example_path.csv"                     # Path to CSV file containing waypoints (x,y,v format)
+    csv_path: "src/control/pure_pursuit/path/example_path.csv"                     # Path to CSV file containing waypoints (x,y,v format)
     invert: false                    # Invert the order of waypoints
     frame_id: "map"                  # Frame ID for the waypoints
     publish_rate: 1.0                # Publish rate for path messages

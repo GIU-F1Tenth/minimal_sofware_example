@@ -49,22 +49,30 @@ class SimplePathNode(Node):
                 "csv_path parameter is empty. Please provide a valid CSV file path.")
             return
 
-        # Handle relative paths - make them relative to the workspace root
         if not os.path.isabs(self.csv_path):
-            # Get the workspace root (assuming we're in a ROS 2 workspace)
-            workspace_root = os.environ.get('ROS_WORKSPACE', os.getcwd())
-            self.csv_path = os.path.join(workspace_root, self.csv_path)
-
-        if not os.path.exists(self.csv_path):
-            self.get_logger().error(f"CSV file not found: {self.csv_path}")
-            # Try alternative path resolution
-            alt_path = os.path.join(os.getcwd(), self.get_parameter(
-                'csv_path').get_parameter_value().string_value)
-            if os.path.exists(alt_path):
-                self.csv_path = alt_path
-                self.get_logger().info(
-                    f"Found CSV file at alternative path: {self.csv_path}")
-            else:
+            original_path = self.csv_path
+            found = False
+            
+            if os.path.exists(self.csv_path):
+                self.csv_path = os.path.abspath(self.csv_path)
+                found = True
+            
+            if not found and 'ROS_WORKSPACE' in os.environ:
+                workspace_path = os.path.join(os.environ['ROS_WORKSPACE'], original_path)
+                if os.path.exists(workspace_path):
+                    self.csv_path = workspace_path
+                    found = True
+                    self.get_logger().info(
+                        f"Resolved relative path '{original_path}' via ROS_WORKSPACE to: {self.csv_path}")
+            
+            if not found:
+                self.get_logger().error(
+                    f"CSV file not found. Tried relative path '{original_path}' from: "
+                    f"current directory and ROS_WORKSPACE.")
+                return
+        else:
+            if not os.path.exists(self.csv_path):
+                self.get_logger().error(f"CSV file not found: {self.csv_path}")
                 return
 
         # Create publisher
