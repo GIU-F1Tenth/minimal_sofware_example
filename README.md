@@ -232,9 +232,10 @@ sudo apt install \
   ros-humble-bondcpp \
   ros-humble-navigation2 \
   ros-humble-nav2-bringup \
-  ros-humble-ackermann-msgs
+  ros-humble-ackermann-msgs \
+  ros-humble-tf-transformations
 
-pip install pandas==2.3.3
+pip install -r requirements.txt
 ```
 
 If you wish to run the stack on the actual RoboRacer vehicle, additionally run
