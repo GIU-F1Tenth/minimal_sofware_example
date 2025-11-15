@@ -45,6 +45,8 @@ jobs:
           ros-humble-nav2-bringup \
           ros-humble-ackermann-msgs \
           ros-humble-urg-node \
+          ros-humble-tf-transformations \
+          sudo apt install \
           python3-pip \
           python3-colcon-common-extensions
     
